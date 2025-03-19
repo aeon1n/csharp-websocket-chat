@@ -83,10 +83,14 @@ namespace server
 
                     /* decode bytes from buffer array into string */
                     string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    Console.WriteLine($"Received: {message}");
-
-                    await BroadcastMessageAsync($"{client.Username}: {message}", client);
-
+                    if (message == "/show users")
+                    {
+                        await SendUsernamesAsync(client);
+                    }
+                    else
+                    {
+                        await BroadcastMessageAsync($"{client.Username}: {message}", client);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -126,6 +130,17 @@ namespace server
                     Console.WriteLine($"Client {client.UID} set their username to {client.Username}");
                     return; // Exit after setting the username
                 }
+            }
+        }
+
+        private async Task SendUsernamesAsync(Client client)
+        {
+            var usernames = string.Join(", ", _clients.Select(c => c.Username));
+            var buffer = Encoding.UTF8.GetBytes(string.Join(Environment.NewLine, usernames.Split(", ")));
+
+            if (client.Socket.State == WebSocketState.Open)
+            {
+                await client.Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
             }
         }
     }
