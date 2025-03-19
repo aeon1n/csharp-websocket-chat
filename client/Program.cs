@@ -26,7 +26,7 @@ namespace client
                 AnsiConsole.MarkupLine("[red]Invalid server address! Please provide a valid WebSocket URL.[/]");
                 return;
             }
-
+            string username = AnsiConsole.Ask<string>("Type your username: ");
             AnsiConsole.MarkupLine($"[yellow]Connecting to {server}...[/]");
 
             var ws = new ClientWebSocket();
@@ -35,6 +35,8 @@ namespace client
             {
                 await ws.ConnectAsync(new Uri(server), CancellationToken.None);
                 AnsiConsole.MarkupLine("[green]Connected successfully![/]");
+
+                await SendMessageAsync(ws, "(USERNAME)" + username);
 
                 // Start message handling
                 var receiveTask = ReceiveMessagesAsync(ws);
