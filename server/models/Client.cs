@@ -7,11 +7,13 @@ namespace server.models
     {
         public Guid UID { get; }
         public WebSocket Socket { get; }
+        public string Username { get; set; }
 
         public Client(WebSocket socket)
         {
             UID = Guid.NewGuid();
             Socket = socket;
+            Username = "Guest" + new Random().Next(1000, 10000);
         }
     }
 }

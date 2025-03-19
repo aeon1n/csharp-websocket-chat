@@ -52,7 +52,8 @@ namespace server
             var client = new Client(wsContext.WebSocket);
             _clients.Add(client);
             Console.WriteLine("Client connected! Total Clients {0}", _clients.Count);
-            await BroadcastMessageAsync($"{client.UID}: Joined the Room", client);
+            await ReceiveUsernameAsync(client);
+            await BroadcastMessageAsync($"{client.Username}: Joined the Room", client);
 
             /* Wait for messages from client */
             await ReceiveMessagesAsync(client);
@@ -84,7 +85,8 @@ namespace server
                     string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                     Console.WriteLine($"Received: {message}");
 
-                    await BroadcastMessageAsync($"{client.UID}: {message}", client);
+                    await BroadcastMessageAsync($"{client.Username}: {message}", client);
+
                 }
                 catch (Exception ex)
                 {
@@ -107,6 +109,24 @@ namespace server
             }
 
             await Task.WhenAll(sendTasks);
+        }
+
+        private async Task ReceiveUsernameAsync(Client client)
+        {
+            var buffer = new Byte[1024];
+
+            while (client.Socket.State == WebSocketState.Open)
+            {
+                var result = await client.Socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+                if (message.Trim().StartsWith("(USERNAME)", StringComparison.OrdinalIgnoreCase))
+                {
+                    client.Username = message.Substring(10).Trim();
+                    Console.WriteLine($"Client {client.UID} set their username to {client.Username}");
+                    return; // Exit after setting the username
+                }
+            }
         }
     }
 }
