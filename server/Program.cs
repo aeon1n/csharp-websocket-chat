@@ -10,7 +10,7 @@ namespace server
     {
         static async Task Main(string[] args)
         {
-            var server = new WebSocketServer("http://localhost:5000/");
+            var server = new WebSocketServer("http://127.0.0.1:5000/");
             await server.StartAsync();
         }
     }
