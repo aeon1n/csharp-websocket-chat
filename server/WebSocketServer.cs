@@ -52,7 +52,7 @@ namespace server
             var client = new Client(wsContext.WebSocket);
             _clients.Add(client);
             Console.WriteLine("Client connected! Total Clients {0}", _clients.Count);
-            await BroadcastMessageAsync($"{client.UID}: Joined the Room");
+            await BroadcastMessageAsync($"{client.UID}: Joined the Room", client);
 
             /* Wait for messages from client */
             await ReceiveMessagesAsync(client);
@@ -76,7 +76,7 @@ namespace server
                         await client.Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
                         _clients.Remove(client);
                         Console.WriteLine("Client disconnected");
-                        await BroadcastMessageAsync($"{client.UID}: Left the Room");
+                        await BroadcastMessageAsync($"{client.UID}: Left the Room", client);
                         break;
                     }
 
@@ -84,7 +84,7 @@ namespace server
                     string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                     Console.WriteLine($"Received: {message}");
 
-                    await BroadcastMessageAsync($"{client.UID}: {message}");
+                    await BroadcastMessageAsync($"{client.UID}: {message}", client);
                 }
                 catch (Exception ex)
                 {
@@ -93,16 +93,16 @@ namespace server
             }
         }
 
-        private async Task BroadcastMessageAsync(string message)
+        private async Task BroadcastMessageAsync(string message, Client sender)
         {
             var buffer = Encoding.UTF8.GetBytes(message);
             var sendTasks = new List<Task>();
 
             foreach (var client in _clients)
             {
-                if (client.Socket.State == WebSocketState.Open)
+                if (client.Socket.State == WebSocketState.Open && client != sender)
                 {
-                    await client.Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                    sendTasks.Add(client.Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None));
                 }
             }
 
