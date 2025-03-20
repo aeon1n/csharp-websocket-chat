@@ -8,12 +8,12 @@
 - 👥 Multiple clients can join
 - 📝 Username-based messaging
 - 🔌 Graceful connection handling
-
+- ✅ Basic chat functionality
+- 📃 User list
+ 
 # Roadmap
 
-- ✅ Basic chat functionality
 - 🔄 Private messaging
-- 📃 User list
 - 📜 Chat history logging
 
 ## Installation
