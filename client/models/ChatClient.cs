@@ -33,4 +33,13 @@ public class ChatClient
             AnsiConsole.MarkupLine($"[red]Error connecting to the server: {ex.Message}[/]");
         }
     }
+    public async Task CloseWebSocketAsync()
+    {
+        if (_ws.State == WebSocketState.Open)
+        {
+            Console.WriteLine("Closing WebSocket...");
+            await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client shutting down", CancellationToken.None);
+        }
+        _ws.Dispose();
+    }
 }

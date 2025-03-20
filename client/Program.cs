@@ -30,6 +30,17 @@ namespace client
             ui.UpdateUI();
 
             var client = new ChatClient(server, username);
+
+            Console.CancelKeyPress += (sender, eventArgs) =>
+            {
+                eventArgs.Cancel = true; // Prevent the process from terminating immediately
+                Task.Run(async () =>
+                {
+                    await client.CloseWebSocketAsync();
+                    Environment.Exit(0);
+                });
+            };
+
             await client.StartAsync();
         }
     }
