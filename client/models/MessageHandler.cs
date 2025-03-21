@@ -42,7 +42,9 @@ public class MessageHandler
     {
         while (_ws.State == WebSocketState.Open)
         {
+            /* read message from console and add to messagelist */
             var message = Console.ReadLine()?.Trim();
+
             if (!string.IsNullOrWhiteSpace(message))
             {
                 await SendMessageAsync(message);

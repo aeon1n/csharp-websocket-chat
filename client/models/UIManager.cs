@@ -6,10 +6,12 @@ namespace client.models;
 
 public class UIManager
 {
+    /* concurrent queue -> thread safe FIFO collection  */
     private readonly ConcurrentQueue<string> _messageLog = new();
 
     public void AddMessage(string message)
     {
+        /* add massage and reload ui */
         _messageLog.Enqueue(message);
         UpdateUI();
     }
@@ -17,6 +19,7 @@ public class UIManager
     public void UpdateUI()
     {
         Console.Clear();
+
         AnsiConsole.MarkupLine("[bold cyan]C#HAT - Chat Client[/]");
         AnsiConsole.Write(new Rule("[blue]Messages[/]") { Justification = Justify.Left });
 

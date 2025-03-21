@@ -17,6 +17,7 @@ public class Broadcaster
     {
         var buffer = Encoding.UTF8.GetBytes(message);
         var sendTasks = new List<Task>();
+
         foreach (var client in _clients)
         {
             if (client.Socket.State == WebSocketState.Open && client != sender)
@@ -24,6 +25,8 @@ public class Broadcaster
                 sendTasks.Add(client.Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None));
             }
         }
+
+        /* wait for all sneding tasks to complete */
         await Task.WhenAll(sendTasks);
     }
 }

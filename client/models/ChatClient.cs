@@ -21,11 +21,17 @@ public class ChatClient
 
     public async Task StartAsync()
     {
+        /* try to connect to given ws server */
         try
         {
             await _ws.ConnectAsync(new Uri(_server), CancellationToken.None);
+
             AnsiConsole.MarkupLine("[green]Connected successfully![/]");
+
+            /* send username to server as first message */
             await _messageHandler.SendMessageAsync("(USERNAME)" + _username);
+
+            /* wait for task to complete */
             await Task.WhenAll(_messageHandler.ReceiveMessagesAsync(), _messageHandler.SendMessagesAsync());
         }
         catch (Exception ex)
