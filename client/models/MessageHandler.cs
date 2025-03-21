@@ -30,6 +30,7 @@ public class MessageHandler
                     break;
                 }
                 string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
                 _uiManager.AddMessage(message);
             }
             catch (Exception ex)

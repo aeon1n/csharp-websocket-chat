@@ -61,6 +61,10 @@ public class MessageHandler
             {
                 await SendUsernamesAsync(client);
             }
+            else if (message.Substring(0, 2).Trim().StartsWith("/w"))
+            {
+                await WhisperToUserAsync(message.Substring(3).Split(" ")[0], client, message.Substring(3));
+            }
             else
             {
                 await _broadcaster.BroadcastMessageAsync($"{client.Username}: {message}", client);
@@ -94,6 +98,25 @@ public class MessageHandler
         if (client.Socket.State == WebSocketState.Open)
         {
             await client.Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+    }
+
+    private async Task WhisperToUserAsync(string receiver, Client sender, string message)
+    {
+        var messageWithoutUsername = string.Join(" ", message.Split(" ").Skip(1));
+
+        var buffer = Encoding.UTF8.GetBytes("[red]" + sender.Username + ": " + messageWithoutUsername + "[/]");
+
+        Client? whisperReceiver = _clients.FirstOrDefault(c => c.Username.ToLower() == receiver.ToLower());
+        if (whisperReceiver == null)
+        {
+            Console.WriteLine($"User {receiver} not found.");
+            return;
+        }
+
+        if (sender.Socket.State == WebSocketState.Open)
+        {
+            await whisperReceiver.Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
 }
