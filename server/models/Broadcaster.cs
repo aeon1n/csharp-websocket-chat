@@ -26,7 +26,7 @@ public class Broadcaster
             }
         }
 
-        /* wait for all sneding tasks to complete */
+        /* wait for all sending tasks to complete */
         await Task.WhenAll(sendTasks);
     }
 }

@@ -13,7 +13,7 @@ namespace server.models
         {
             UID = Guid.NewGuid();
             Socket = socket;
-            Username = "Guest" + new Random().Next(1000, 10000); // randon 4 digit number
+            Username = "Guest" + new Random().Next(1000, 10000); // random 4 digit number
         }
     }
 }
